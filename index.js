@@ -194,6 +194,33 @@ app.put('/felhasznalonev', auth, async(req, res) =>{
         res.status(500).json({message:"szerverhiba"})
     }
 })
+
+app.put('/jelszo', auth, async(req, res) =>{
+    const {regiJelszo, ujJelszo}=req.body;
+    if (!regiJelszo || !ujJelszo){
+        return res.status(401).json({message:"a regi es az uj jelszo megadasa kotelezo"})
+    }
+    try{
+        const sql1 ='SELECT jelszo FROM felhasznalok WHERE id=?'
+        const [result] = await db.query(sql1, [req.user.id])
+        if(!result.length){
+            return res.status(404).json({message:"felhasznalo nem talalhato"})
+        }
+
+        const ok = await bcrypt.compare(regiJelszo, result[0].jelszo)
+        if(!ok){
+            return res.status(403).json({message:"a regi jelszo nem helyes"})
+        }
+
+        const hash = await bcrypt.hash(ujJelszo, 10);
+        const sql2 ='UPDATE felhasznalok SET jelszo = ? WHERE id =?'
+        await db.query(sql2,[hash, req.user.id]);
+        return res.status(200).json({message:"sikeresen modosult a jelszo"})
+    }catch(error){
+        console.log(error);
+        res.status(500).json({message:"szerverhiba"})
+    }
+})
  app.delete('/fiokom', auth,async(req,res)=>{
     try {
         const sql ='Delle'
