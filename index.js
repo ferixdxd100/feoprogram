@@ -173,7 +173,6 @@ app.put('/email', auth, async(req, res) =>{
 })
 
 
-
 app.put('/felhasznalonev', auth, async(req, res) =>{
     const {ujFelhasznalonev}=req.body;
     if (!ujFelhasznalonev){
@@ -222,8 +221,10 @@ app.put('/jelszo', auth, async(req, res) =>{
     }
 })
  app.delete('/fiokom', auth,async(req,res)=>{
+    const userid=  [req.user.id];
     try {
-        const sql ='Delle'
+        const sql ='DELETE FROM felhasznalok WHERE id=?';
+        await db.query(sql,userid);
         res.clearCookie(COOKIE_NAME,{path:'/'});
         res.status(200).json({message:"sikeres fioktorles"})
     } catch (error) {

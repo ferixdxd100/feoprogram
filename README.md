@@ -1,0 +1,3 @@
+-1 npm install, node index.js
+-2 adatbazis inport
+-3 adatbazis kapcsolat ellenörzése (host,port)
